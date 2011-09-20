@@ -19,6 +19,9 @@
 %option nounput
 %option noinput
 %option yylineno
+%top{
+#define YY_BUF_SIZE 16777216
+}
 %{
 #include <stdio.h>
 #include <stdio.h>
@@ -103,7 +106,7 @@ void my_interfaceparse(char *my_string) {
 
    YY_BUFFER_STATE my_string_buffer;
    my_string_buffer = interface_scan_string(my_string);
-   yylineno = 1;
+   interfacelineno = 1;
    func_args = NULL;
    interfacelex();
    //interface_delete_buffer(my_string_buffer);
@@ -363,7 +366,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 <RCOMMENT>{ANY}  { yymore(); }
 
 <REGEX>(;) {
-    if (my_yyparse(interfacetext, yylineno) == 0) {
+    if (my_yyparse(interfacetext, interfacelineno) == 0) {
       /* regex xxx line */
       if (pmode == RE) {
         stack_add(fsm_topsort(fsm_minimize(current_parse)));
@@ -619,7 +622,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
       if (!input_is_file)
         printf("Unknown command. Ignoring until end of line.\n");
       else 
-        printf("***Unknown command '%s' on line %i. Aborting.\n",interfacetext,yylineno);
+        printf("***Unknown command '%s' on line %i. Aborting.\n",interfacetext,interfacelineno);
       return 1;
 }
 
