@@ -201,6 +201,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 ^{SP}*(pr(i(nt?)?)?{SP}+)?random\-words{SP}+[0-9]+ { iface_random_words(iface_extract_number(interfacetext)); }
 ^{SP}*(pr(i(nt?)?)?{SP}+)?sig(ma?)? { iface_print_sigma(); }
 ^{SP}*(pr(i(nt?)?)?{SP}+)?size? { iface_print_stats(); }
+^{SP}*(pr(i(nt?)?)?{SP}+)?stack-size? { printf("STACK SIZE: %d\n", stack_size()); }
 ^{SP}*(pr(i(nt?)?)?{SP}+)?upp(e(r(\-(w(o(r(ds?)?)?)?)?)?)?)? { iface_upper_words(-1); }
 ^{SP}*(pr(i(nt?)?)?{SP}+)?upp(e(r(\-(w(o(r(ds?)?)?)?)?)?)?)?{SP}+[0-9]+ { iface_upper_words(iface_extract_number(interfacetext)); }
 ^{SP}*(pr(i(nt?)?)?{SP}+)?words { iface_words(-1);}
