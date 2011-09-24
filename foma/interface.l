@@ -445,9 +445,9 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 }
 
 <DEFI>(([\001-\010]|[\013-\037]|[\041-\047]|[\051-\072]|[\074-\177]|[\300-\337][\200-\277]|[\340-\357][\200-\277][\200-\277]|[\360-\367][\200-\277][\200-\277][\200-\277])+)[ \t]+?;? {
-
+   tempnet = 0;
    /* Define the top network on stack */
-   if (iface_stack_check(1))
+   if (iface_stack_check(1))  {
      tempnet = stack_pop();
      olddef = add_defined(tempnet,remove_trailing(interfacetext,';'));
      if (olddef) {
@@ -456,7 +456,8 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
         printf("defined %s: ",interfacetext);
      }
      print_stats(tempnet);
-     BEGIN(INITIAL);
+   }
+   BEGIN(INITIAL);
 }
 
 <UNDEFINE>{NONL}+ {
