@@ -12,3 +12,4 @@ libfoma.dylib.0.9.14
 regex.output
 regex.tab.c
 regex.tab.h
+libfoma.so.*
