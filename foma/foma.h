@@ -1,5 +1,5 @@
 /*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2010 Mans Hulden                                     */
+/*     Copyright © 2008-2011 Mans Hulden                                     */
 
 /*     This file is part of foma.                                            */
 
@@ -77,7 +77,6 @@ int stack_add(struct fsm *fsm);
 int stack_size();
 int stack_init();
 struct fsm *stack_pop();
-struct fsm *stack_pop_q();
 int stack_isempty();
 int stack_turn();
 struct stack_entry *stack_find_top();

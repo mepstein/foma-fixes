@@ -23,10 +23,7 @@
 #include <stdio.h>
 #include "regex.tab.h"
 #include "foma.h"
-
-#define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; \
-    yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; \
-    yycolumn += yyleng;
+#define YY_USER_ACTION yylloc->first_line = yylloc->last_line = yylineno; yylloc->first_column = yycolumn; yylloc->last_column = yycolumn+yyleng-1; yycolumn += yyleng;
 
 #define MAX_PARSE_DEPTH 100
 
@@ -61,11 +58,10 @@ int my_yyparse(char *my_string, int lineno);
 int yywrap(yyscan_t scanner) {return 1; }
 
 int yyerror(YYLTYPE* yylloc, yyscan_t scanner, char *msg) {
-  if(yylloc->first_line)
-    fprintf(stderr, "%d.%d-%d.%d: error: ", yylloc->first_line, yylloc->first_column,
-	    yylloc->last_line, yylloc->last_column);
-  printf("%s%s at '%s'.\n", "***", msg, yyget_text(scanner));
-  return 1;
+   if(yylloc->first_line)
+     fprintf(stderr, "%d.%d-%d.%d: error: ", yylloc->first_line, yylloc->first_column, yylloc->last_line, yylloc->last_column);
+   printf("%s%s at '%s'.\n", "***", msg, yyget_text(scanner));
+   return 1;
 }
 
 struct fsm *fsm_parse_regex(char *regex) {
@@ -94,7 +90,7 @@ struct fsm *fsm_parse_regex_string(char *regex) {
   }
 }
 
-void yyset_lineno (int line_number ,yyscan_t yyscanner );
+void yyset_lineno (int line_number, yyscan_t yyscanner);
 
 int my_yyparse(char *my_string, int lineno) {
    int yyp;
@@ -104,7 +100,6 @@ int my_yyparse(char *my_string, int lineno) {
    YY_BUFFER_STATE my_string_buffer;
    my_string_buffer = yy_scan_string(my_string, scanner);
    yyset_lineno(lineno, scanner);
-
    if (g_parse_depth > 0) {
       if (g_parse_depth >= MAX_PARSE_DEPTH) {
         fprintf(stderr,"Exceeded parser stack depth.  Self-recursive call?\n");
@@ -430,4 +425,5 @@ BRACED      [{]([^}]|[\300-\337].|[\340-\357]..|[\360-\367]...)+[}]
 
 ((#|!).*\n) { yycolumn = 1; }
 (\n+) {  }
+(\r+) {  }
 (.) { }

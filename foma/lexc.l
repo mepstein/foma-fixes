@@ -21,7 +21,6 @@
 %top{
 #define YY_BUF_SIZE 16777216
 }
-
 %{
 
 #include <stdio.h>
@@ -31,7 +30,6 @@
 
 #define SOURCE_LEXICON 0
 #define TARGET_LEXICON 1
-
 #define YY_USER_ACTION lexccolumn += lexcleng;
 static int lexentries;
 extern int lexclex();

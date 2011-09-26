@@ -1,5 +1,5 @@
 /*     Foma: a finite-state toolkit and library.                             */
-/*     Copyright © 2008-2010 Mans Hulden                                     */
+/*     Copyright © 2008-2011 Mans Hulden                                     */
 
 /*     This file is part of foma.                                            */
 
@@ -23,7 +23,6 @@
 #define YY_BUF_SIZE 16777216
 }
 %{
-#include <stdio.h>
 #include <stdio.h>
 #include "foma.h"
 #define RE 0 /* regex  */
@@ -216,7 +215,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 ^{SP}*(re(ad?)?{SP}+)?cmatrix{SP}*<?{SP}*/[^ \t] { BEGIN(RCMATRIX); }
 ^{SP}*(re(ad?)?{SP}+)?prol(og?)?{SP}*<?{SP}*|rpl{SP}*<?{SP}* { BEGIN(RPL); }
 ^{SP}*(re(ad?)?{SP}+)?lexc{SP}*<?{SP}* { BEGIN(RLEXC); }
-^{SP}*(re(ad?)?{SP}+)?re(g(ex?)?)? { pmode = RE; BEGIN(REGEX); }
+^{SP}*(re(ad?)?{SP}+)?re(g(ex?)?)?{SP}+ { pmode = RE; BEGIN(REGEX); }
 ^{SP}*(re(ad?)?{SP}+)?spaced\-text{SP}*<?{SP}* { BEGIN(READ_SPACED_TEXT); }
 ^{SP}*(re(ad?)?{SP}+)?text{SP}*<?{SP}* { BEGIN(READ_TEXT); }
 ^{SP}*rev(e(r(se?)?)?)?({SP}+net?)?  { iface_reverse(); }
@@ -240,7 +239,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 ^{SP}*(test{SP}+non-null|tnn) {  iface_test_nonnull(); }
 ^{SP}*(test{SP}+null|tnu) {  iface_test_null(); }
 ^{SP}*(test{SP}+lower-universal|tlu) {  iface_test_lower_universal(); }
-^{SP}*(test{SP}+star-free|tsf) {  iface_test_star_free(); }
+^{SP}*(test{SP}+sequential|tseq) {  iface_test_sequential(); }
 ^{SP}*(test{SP}+upper-univesal|tuu) {  iface_test_upper_universal(); }
 ^{SP}*tu(rn?)?({SP}+st(a(ck?)?)?)? {  iface_turn(); }
 ^{SP}*(twosided{SP}+flag-diacritics|tfd) {  iface_twosided_flags(); }
@@ -445,19 +444,19 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 }
 
 <DEFI>(([\001-\010]|[\013-\037]|[\041-\047]|[\051-\072]|[\074-\177]|[\300-\337][\200-\277]|[\340-\357][\200-\277][\200-\277]|[\360-\367][\200-\277][\200-\277][\200-\277])+)[ \t]+?;? {
-   tempnet = 0;
+   tempnet = NULL;
    /* Define the top network on stack */
-   if (iface_stack_check(1))  {
-     tempnet = stack_pop();
-     olddef = add_defined(tempnet,remove_trailing(interfacetext,';'));
-     if (olddef) {
-       printf("redefined %s: ",interfacetext);
-     } else {
-        printf("defined %s: ",interfacetext);
+   if (iface_stack_check(1)) {
+       tempnet = stack_pop();
+       olddef = add_defined(tempnet,remove_trailing(interfacetext,';'));
+       if (olddef) {
+         printf("redefined %s: ",interfacetext);
+       } else {
+          printf("defined %s: ",interfacetext);
+       }
+       print_stats(tempnet);
      }
-     print_stats(tempnet);
-   }
-   BEGIN(INITIAL);
+     BEGIN(INITIAL);
 }
 
 <UNDEFINE>{NONL}+ {
@@ -501,7 +500,7 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
   if ((yyin = fopen(trim(interfacetext), "r" )) != NULL) {
     printf("Opening file '%s'.\n", trim(interfacetext));    
     input_is_file = 1;
-    yypush_buffer_state(yy_create_buffer(yyin, YY_BUF_SIZE ));
+    yypush_buffer_state(yy_create_buffer(yyin, YY_BUF_SIZE*2));
   } else {
     printf("Error opening file '%s'\n",trim(interfacetext));
   }
@@ -579,12 +578,12 @@ NOSPEQ     [\001-\177]{-}[\040\075]|[\300-\337].|[\340-\357]..|[\360-\367]...
 }
 
 <ASSERT_STACK>{NONL} {
- int level = strtoul(interfacetext, 0, 10);
- if (level != stack_size()) {
-    fprintf(stderr, "Stack size %d not %d\n", stack_size(), level);
-    exit(1);
- }
- BEGIN(INITIAL);
+    int level = strtoul(interfacetext, 0, 10);
+    if (level != stack_size()) {
+      fprintf(stderr, "Stack size %d not %d\n", stack_size(), level);
+      exit(1);
+    }
+    BEGIN(INITIAL);
 }
 
 <ATT>{NONL}+ {
