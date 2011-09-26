@@ -154,10 +154,14 @@ void apply_clear(struct apply_handle *h) {
         xxfree(h->flag_lookup);
         h->flag_lookup = NULL;
     }
+    if (h->sigmatch_array != NULL) {
+	xxfree(h->sigmatch_array);
+	h->sigmatch_array = NULL;
+    }
     h->last_net = NULL;
     h->iterator = 0;
     xxfree(h->outstring);
-    xxfree(h);    
+    xxfree(h);
 }
 
 char *apply_updown(struct apply_handle *h, char *word) {
@@ -313,7 +317,11 @@ char *apply_net(struct apply_handle *h) {
 
     h->ptr = 0; h->ipos = 0; h->opos = 0; h->zeroes = 0;
     apply_stack_clear(h);
-
+    
+    if (h->has_flags) {
+	apply_clear_flags(h);
+    }
+    
     /* "The use of four-letter words like goto can occasionally be justified */
     /*  even in the best of company." Knuth (1974). */
 
