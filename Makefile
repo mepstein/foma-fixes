@@ -9,7 +9,7 @@ CC = gcc
 RANLIB = ranlib
 YACC = bison -d -t -v
 LEX = flex -8
-LEXCLEX = flex -8 --prefix=lexc 
+LEXCLEX = flex -8 --prefix=lexc
 LEXIFACE = flex -8 --prefix=interface
 LEXCMATRIX = flex -8 --prefix=cmatrix
 RM = /bin/rm -f
